@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        button {
+            padding: 8px 12px;
+            font-size: 16px;
+        }
+        .status-message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Employee Management</h1>
+        <table id="employeesTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        let managerName = ''; // Variable to store the manager's username
+
+        // Fetch the manager's username
+        function fetchUsername() {
+            return fetch('webapi/myresource/username')
+                .then(response => response.text())
+                .then(data => {
+                    managerName = data;
+                    console.log('Manager name fetched:', managerName); // Debugging
+                })
+                .catch(error => {
+                    console.error('Error fetching username:', error);
+                    document.querySelector('#statusMessage').textContent = 'Error fetching manager username.';
+                });
+        }
+
+        // Fetch and display employees
+        function fetchEmployees() {
+            if (!managerName) {
+                console.error('Manager name is not set.');
+                document.querySelector('#statusMessage').textContent = 'Manager name is not set.';
+                return;
+            }
+
+            fetch('webapi/myresource/addToTeam')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(employees => {
+                    const tableBody = document.querySelector('#employeesTable tbody');
+                    tableBody.innerHTML = ''; // Clear any existing rows
+
+                    employees.forEach(employee => {
+                        const row = document.createElement('tr');
+                        
+                        const usernameCell = document.createElement('td');
+                        usernameCell.textContent = employee;
+                        row.appendChild(usernameCell);
+                        
+                        const actionsCell = document.createElement('td');
+                        const addButton = document.createElement('button');
+                        addButton.textContent = 'Add Member';
+                        addButton.onclick = () => addMember(employee);
+                        actionsCell.appendChild(addButton);
+                        row.appendChild(actionsCell);
+                        
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching employees:', error);
+                    document.querySelector('#statusMessage').textContent = 'Error fetching employees.';
+                });
+        }
+
+        // Add an employee to the team
+        function addMember(username) {
+            if (!managerName) {
+                console.error('Manager name is not set.');
+                document.querySelector('#statusMessage').textContent = 'Manager name is not set.';
+                return;
+            }
+
+            fetch(`webapi/myresource/addMember/${username}/${managerName}`, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(result => {
+                document.querySelector('#statusMessage').textContent = result;
+            })
+            .catch(error => {
+                console.error('Error adding member:', error);
+                document.querySelector('#statusMessage').textContent = 'Error adding member.';
+            });
+        }
+
+        // Fetch username and employees when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsername().then(() => {
+                fetchEmployees(); // Ensure managerName is set before fetching employees
+            });
+        });
+
+    </script>
+</body>
+</html>

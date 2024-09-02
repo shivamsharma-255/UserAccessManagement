@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource User Lookup</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column; /* Stack items vertically */
+            text-align: center; /* Center align text */
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px; /* Add spacing between heading and content */
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: left; /* Align content to the left */
+            margin-bottom: 20px; /* Add spacing below container */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        select, button, ul {
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        select {
+            background-color: #fafafa;
+        }
+
+        button {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            background: #fafafa;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>User By Resources</h1>
+    
+    <div class="container">
+      <label for="resourceSelect">Select Resource:</label>
+    <select id="resourceSelect">
+        <!-- Options will be dynamically populated -->
+    </select>
+    
+    <button onclick="fetchUsers()">Get Users</button>
+    </div>
+    
+    <div id="userList">
+        <h2>Users:</h2>
+        <ul id="users">
+            <!-- Users will be dynamically populated -->
+        </ul>
+    </div>
+
+    <script>
+        // Function to fetch resource names and populate the dropdown
+        async function populateResources() {
+            try {
+                const response = await fetch('webapi/myresource/resources'); // URL to get resources as HTML
+                const html = await response.text();
+                const resourceSelect = document.getElementById('resourceSelect');
+                
+                // Insert the HTML options directly into the dropdown
+                resourceSelect.innerHTML = html;
+            } catch (error) {
+                console.error('Error fetching resources:', error);
+            }
+        }
+
+        // Function to fetch users by the selected resource name
+        async function fetchUsers() {
+            const resourceName = document.getElementById('resourceSelect').value;
+            const userList = document.getElementById('users');
+            userList.innerHTML = ''; // Clear previous results
+            
+            if (resourceName) {
+                try {
+                    const response = await fetch(`webapi/myresource/usersByResource?resourceName=${encodeURIComponent(resourceName)}`);
+                    const text = await response.text();
+                    
+                    if (response.ok) {
+                        const users = text.split('\n').filter(user => user.trim() !== '');
+                        users.forEach(user => {
+                            const listItem = document.createElement('li');
+                            listItem.textContent = user;
+                            userList.appendChild(listItem);
+                        });
+                    } else {
+                        userList.innerHTML = `<li>Error: ${text}</li>`;
+                    }
+                } catch (error) {
+                    console.error('Error fetching users:', error);
+                    userList.innerHTML = '<li>Error fetching users. Please try again later.</li>';
+                }
+            } else {
+                userList.innerHTML = '<li>Please select a resource.</li>';
+            }
+        }
+
+        // Populate resources when the page loads
+        window.onload = populateResources;
+    </script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resource Requests</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 20px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        h1 {
+            font-size: 36px;
+            color: #4a90e2;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Requests Container Styles */
+        #requestsContainer {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Table Styles */
+        #requestsContainer table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        #requestsContainer table, th, td {
+            border: 1px solid black;
+        }
+
+        #requestsContainer th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        #requestsContainer th {
+            background-color: #4a90e2;
+            color: #fff;
+        }
+
+        #requestsContainer tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Status Styles */
+        .status-approved {
+            color: green;
+        }
+
+        .status-rejected {
+            color: red;
+        }
+
+        .status-pending {
+            color: orange;
+        }
+
+        /* Button Styles */
+        .button {
+            padding: 5px 10px;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .approve-button {
+            background-color: green;
+        }
+
+        .reject-button {
+            background-color: red;
+        }
+
+        /* Loader and Error Message Styles */
+        #requestsContainer p {
+            font-size: 18px;
+            color: #666;
+            margin: 0;
+        }
+
+        form {
+            display: inline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Resource Requests</h1>
+    
+    <!-- Display the resource requests -->
+    <div id="requests">
+        <!-- Content will be dynamically injected here -->
+    </div>
+
+    <script>
+        // Function to fetch and display requests
+        async function fetchRequests() {
+            try {
+                const response = await fetch('webapi/myresource/checkRequests');
+                const text = await response.text();
+                document.getElementById('requests').innerHTML = text;
+            } catch (error) {
+                console.error('Error fetching requests:', error);
+                document.getElementById('requests').innerHTML = '<p>Error loading requests.</p>';
+            }
+        }
+
+        // Fetch requests on page load
+        fetchRequests();
+    </script>
+</body>
+</html>

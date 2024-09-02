@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup Page</title>
+    <link href="styled.css" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-form">
+            <h2>Create an Account</h2>
+            <form id="signup-form" action="webapi/myresource/registration" method="post">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                    <div class="error-message" id="firstname-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                    <div class="error-message" id="lastname-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message" id="email-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="phno">Phone Number</label>
+                    <input type="text" id="phno" name="phno" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="pwd" required>
+                    <div class="error-message" id="password-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="cpwd" required>
+                    <div class="error-message" id="confirm-password-error"></div>
+                </div>
+                <br>
+                <div class="butn">
+                    <button style="padding-left:172px;padding-right:172px" type="submit" class="submit-btn">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            // Clear previous error messages
+            document.getElementById('firstname-error').textContent = '';
+            document.getElementById('lastname-error').textContent = '';
+            document.getElementById('email-error').textContent = '';
+            document.getElementById('password-error').textContent = '';
+            document.getElementById('confirm-password-error').textContent = '';
+
+            var firstname = document.getElementById('firstname').value;
+            var lastname = document.getElementById('lastname').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+
+            var firstnameValid = true;
+            var lastnameValid = true;
+            var emailValid = true;
+            var passwordValid = true;
+            var confirmPasswordValid = true;
+
+            // Regular expressions
+            var nameRegex = /^[A-Za-z]+$/; // Only alphabets
+            var passwordRegex = /^(?=.*[A-Z])(?=.*\W).{8,}$/; // Password constraints
+            var emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;//email constarints
+
+            // Validate firstname
+            if (!nameRegex.test(firstname)) {
+                document.getElementById('firstname-error').textContent = 'First name should contain only alphabets.';
+                firstnameValid = false;
+            }
+
+            // Validate lastname
+            if (!nameRegex.test(lastname)) {
+                document.getElementById('lastname-error').textContent = 'Last name should contain only alphabets.';
+                lastnameValid = false;
+            }
+
+            // Validate email
+            if (!emailRegex.test(email)) {
+                document.getElementById('email-error').textContent = 'Please enter a valid email address.';
+                emailValid = false;
+            }
+
+            // Validate password
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password-error').textContent = 'Password should have at least 8 letters, including one symbol and one uppercase character.';
+                passwordValid = false;
+            }
+
+            // Validate confirm password
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-password-error').textContent = 'Passwords do not match.';
+                confirmPasswordValid = false;
+            }
+
+            // Prevent form submission if there are validation errors
+            if (!firstnameValid || !lastnameValid || !emailValid || !passwordValid || !confirmPasswordValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
+

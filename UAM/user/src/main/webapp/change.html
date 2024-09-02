@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Password</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 10px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+        label {
+            margin-bottom: 5px;
+        }
+        input {
+            margin-bottom: 5px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            border: none;
+            background-color: #4a90e2;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357abd;
+        }
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .password-error {
+            color: red;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Change Password</h1>
+        <div class="form">
+            <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <input type="password" id="newPassword" name="newPassword" required>
+                <div id="password-error" class="password-error"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div id="confirm-password-error" class="password-error"></div>
+            </div>
+            <button type="button" onclick="submitPasswordChange()">Change Password</button>
+        </div>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        async function submitPasswordChange() {
+            // Clear previous error messages
+            document.getElementById('password-error').textContent = '';
+            document.getElementById('confirm-password-error').textContent = '';
+
+            // Get the input values
+            var password = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+            var passwordValid = true;
+            var confirmPasswordValid = true;
+
+            // Regular expression for password constraints
+            var passwordRegex = /^(?=.*[A-Z])(?=.*\W).{8,}$/;
+
+            // Check password validity
+            if (!passwordRegex.test(password)) {
+                document.getElementById('password-error').textContent = 
+                    'Password should have at least 8 characters, including one symbol and one uppercase letter.';
+                passwordValid = false;
+            }
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-password-error').textContent = 
+                    'Passwords do not match.';
+                confirmPasswordValid = false;
+            }
+
+            // Prevent form submission if there are validation errors
+            if (!passwordValid || !confirmPasswordValid) {
+                return; // Do not proceed with the form submission
+            }
+
+            // Proceed with the password change request
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('webapi/myresource/changepassword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        'newPassword': password
+                    })
+                });
+
+                const text = await response.text();
+                if (response.ok) {
+                    messageDiv.textContent = text;
+                    messageDiv.className = 'message success';
+                } else {
+                    messageDiv.textContent = text;
+                    messageDiv.className = 'message error';
+                }
+            } catch (error) {
+                messageDiv.textContent = "An error occurred. Please try again.";
+                messageDiv.className = 'message error';
+            }
+
+            // Optionally, reload the page after a delay
+            setTimeout(() => location.reload(), 2000);
+        }
+    </script>
+</body>
+</html>

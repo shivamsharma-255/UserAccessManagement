@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Members Display</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+        }
+        .input-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .input-group button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .status-message {
+            margin-top: 20px;
+            color: #d9534f;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Team Members Display</h1>
+        <div class="input-group">
+            <label for="managerName">Manager's Name:</label>
+            <input type="text" id="managerName" placeholder="e.g., JohnDoe" readonly>
+        </div>
+        <table id="teamMembersTable">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data will be inserted here by JavaScript -->
+            </tbody>
+        </table>
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        let managerName = ''; // Variable to store the manager's username
+
+        async function fetchUsername() {
+            try {
+                const response = await fetch('webapi/myresource/username');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                managerName = await response.text();
+                document.getElementById('managerName').value = managerName;
+                fetchTeamMembers(); // Automatically fetch team members after getting the manager's name
+            } catch (error) {
+                console.error('Error fetching username:', error);
+                document.querySelector('#statusMessage').textContent = 'Error fetching manager name.';
+            }
+        }
+
+        async function fetchTeamMembers() {
+            if (!managerName) {
+                document.querySelector('#statusMessage').textContent = 'Manager name is not available.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`webapi/myresource/getTeamMembers/${encodeURIComponent(managerName)}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const teamMembers = await response.json();
+                
+                const tableBody = document.querySelector('#teamMembersTable tbody');
+                tableBody.innerHTML = ''; // Clear any existing rows
+                
+                if (teamMembers.length === 0) {
+                    document.querySelector('#statusMessage').textContent = 'No team members found.';
+                } else {
+                    teamMembers.forEach(member => {
+                        const row = document.createElement('tr');
+                        const cell = document.createElement('td');
+                        cell.textContent = member;
+                        row.appendChild(cell);
+                        tableBody.appendChild(row);
+                    });
+                    document.querySelector('#statusMessage').textContent = ''; // Clear any previous error messages
+                    
+                }
+            } catch (error) {
+                console.error('Error fetching team members:', error);
+                document.querySelector('#statusMessage').textContent = 'Error fetching team members.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsername(); // Fetch the manager's username when the page loads
+        });
+    </script>
+</body>
+</html>

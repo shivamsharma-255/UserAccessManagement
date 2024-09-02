@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove User Resource</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .header-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #4a90e2;
+            margin: 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin: 0;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            display: block;
+            text-align: left;
+            width: 100%;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4a90e2;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .alert {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #d9534f;
+        }
+    </style>
+    <script>
+        // Function to populate the dropdown with resources
+        async function populateResources() {
+            try {
+                // Fetch the HTML options from your backend
+                const response = await fetch('webapi/myresource/userResources'); // Use the correct path to your endpoint
+                const html = await response.text();
+
+                // Insert the HTML options into the select element
+                const resourceSelect = document.getElementById('resourceSelect');
+                resourceSelect.innerHTML = html; // Set the options directly
+            } catch (error) {
+                console.error('Error fetching resources:', error);
+            }
+        }
+
+        // Function to submit the form
+            async function submitForm(event) {
+		    event.preventDefault();
+		
+		    const formData = new FormData(document.getElementById('resourceForm'));
+		    
+		    try {
+		        const response = await fetch('webapi/myresource/removeUserResource', {
+		            method: 'POST',
+		            headers: {
+		                'Content-Type': 'application/x-www-form-urlencoded'
+		            },
+		            body: new URLSearchParams(formData) // Convert FormData to URLSearchParams
+		        });
+		        
+		        const resultText = await response.text();
+		        alert(resultText);
+		    } catch (error) {
+		        console.error('Error removing resource:', error);
+		    }
+		}
+        // Populate the dropdown when the page loads
+        window.onload = populateResources;
+    </script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-container">
+            <h1>Remove User Resource</h1>
+        </div>
+        <div class="form-container">
+            <form id="resourceForm" onsubmit="submitForm(event)">
+                <label for="resourceSelect">Select Resource:</label>
+                <select id="resourceSelect" name="resourceName" required>
+                    <!-- Options will be dynamically populated here -->
+                </select>
+                <button type="submit">Remove Resource</button>
+            </form>
+        </div>
+    </div></body>
+</html>

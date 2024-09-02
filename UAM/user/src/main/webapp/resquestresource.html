@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Request Resource</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .header-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #4a90e2;
+            margin: 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin: 0;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            display: block;
+            text-align: left;
+            width: 100%;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4a90e2;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .alert {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #d9534f;
+        }
+    </style>
+    
+    <script>
+        function loadResources() {
+            fetch('webapi/myresource/resourcesList')
+                .then(response => response.text())
+                .then(data => {
+                    const select = document.getElementById('resourceName');
+                    const resources = data.trim().split('\n');
+                    resources.forEach(resource => {
+                        const option = document.createElement('option');
+                        option.value = resource;
+                        option.text = resource;
+                        select.add(option);
+                    });
+                });
+        }
+
+        function submitRequest() {
+            const resourceName = document.getElementById('resourceName').value;
+            const formData = new URLSearchParams();
+            formData.append('resourceName', resourceName);
+
+            fetch('webapi/myresource/requestNewResource', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            
+            .then(response => response.text())
+            .then(result => {
+                alert(result);
+            });
+        }
+    </script>
+</head>
+<body onload="loadResources()">
+    <div class="main-container">
+        <div class="header-container">
+            <h1>Request a New Resource</h1>
+        </div>
+        <div class="form-container">
+            <form id="resourceForm" onsubmit="event.preventDefault(); submitRequest();">
+                <label for="resourceName">Resource Name:</label>
+                <select id="resourceName" name="resourceName">
+                    <option value="">Select Resource</option>
+                </select>
+                <button type="submit">Request Resource</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

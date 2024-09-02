@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Resources</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        h1 {
+            font-size: 36px;
+            color: #4a90e2;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        /* Resources Container Styles */
+        #resources-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Loader and Error Message Styles */
+        #resources-container p {
+            font-size: 18px;
+            color: #666;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Resources</h1>
+    <div id="resources-container">
+        <p>Loading resources...</p>
+    </div>
+
+    <script>
+        // Function to fetch user resources
+        function fetchUserResources() {
+            // Make a GET request to the endpoint that provides user resources
+            fetch('webapi/myresource/userResources', {
+                method: 'GET',
+                headers: {
+                    'Accept': 'text/html'
+                }
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Update the page with the resources
+                document.getElementById('resources-container').innerHTML = data;
+            })
+            .catch(error => {
+                console.error('Error fetching user resources:', error);
+                document.getElementById('resources-container').innerHTML = 'Error loading resources.';
+            });
+        }
+
+        // Fetch user resources when the page loads
+        window.onload = fetchUserResources;
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Page</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #9cf1e4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+    height:680px;
+    width:450px;
+    justify-content: center;
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+  }
+  input[type="text"], input[type="password"] {
+    width: 95%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+  input[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  input[type="submit"]:hover {
+    background-color: blue;
+  }
+  h2,p,a{
+  text-align:center;
+  }
+  a {
+    color: red;
+  }
+  #error-message{
+   color:red;
+   font-size:0.9em;
+  }
+</style>
+</head>
+<body>
+     <form action="webapi/myresource/user" method="post" id="myForm">
+        <h2> Register </h2><br>
+        <label for="fname" class="us">First Name:</label>
+        <input type="text" id="fname" name="fname" placeholder="Enter Your FirstName" required><br>
+        <label for="lname" class="us">Last Name:</label>
+        <input type="text" id="lname" name="lname" placeholder="Enter Your LastName" required><br>
+        <label for="email" class="us">Email:</label>
+        <input type="text" id="email" name="email" placeholder="Enter Your Email" required><br>
+        <label for="password" class="us">Password:</label>
+        <input type="password" id="password" name="password" placeholder="Enter Your Password" required><br>
+        <label for="cpassword" class="us">Confirm Password:</label>
+        <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Your Password" required>
+        <div id="error-message" class="error"></div>
+        <input type="submit" value="Submit"><br>
+        <p>Already a User?</p>
+        <a href="index.jsp">Login Here</a>
+    </form>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('myForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('cPassword');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', function(event) {
+            // Clear any previous error message
+            errorMessage.textContent = '';
+
+            // Check if passwords match
+            if (password.value !== confirmPassword.value) {
+                // Prevent form submission
+                event.preventDefault();
+                errorMessage.textContent = 'Passwords do not match.';
+            }
+        });
+    });
+   </script>
+</body>
+</html>

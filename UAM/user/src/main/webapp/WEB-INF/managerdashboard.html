@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(to right, #e0e0e0, #ffffff);
+    color: #333;
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #333;
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+.sidebar h2 {
+    color: #fff;
+    margin-top: 0;
+}
+
+.sidebar a {
+    display: block;
+    color: #fff;
+    padding: 10px;
+    text-decoration: none;
+    margin: 5px 0;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar a:hover {
+    background-color: #575757;
+}
+
+.main-content {
+    margin-left: 250px;
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center horizontally */
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px; /* Limit the width of the container */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center content */
+}
+
+h1 {
+    color: #333;
+    margin: 0;
+    text-align: center;
+}
+
+.section {
+    margin-bottom: 30px;
+    padding: 20px;
+    border: 1px solid #bdc3c7;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: none; /* Hide sections by default */
+    width: 100%;
+    max-width: 800px; /* Limit the width of the sections */
+}
+
+.section.active {
+    display: block; /* Show active section */
+}
+
+.welcome-message {
+    display: none; /* Hide by default */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 100%;
+    font-size: 75px;
+    font-weight: bold;
+    color: #4a90e2;
+}
+
+.welcome-message.active {
+    display: flex; /* Show welcome message */
+}
+
+.form-group {
+    margin-bottom: 25px;
+    width: 100%;
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px;
+    font-size: 15px;
+    border: 2px solid #bdc3c7;
+    border-radius: 10px;
+    background-color: #ecf0f1;
+    box-sizing: border-box; /* Ensure padding and border are included in the width */
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: #4a90e2;
+    background-color: #ffffff;
+    outline: none;
+}
+
+.form-group input[type="submit"] {
+    background: #4a90e2;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s, transform 0.2s;
+    padding: 12px;
+    font-size: 16px;
+    width: 100%; /* Ensure the submit button stretches to fill its container */
+}
+
+.form-group input[type="submit"]:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 15px;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.logout-button {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 25px;
+    font-size: 16px;
+    color: #ffffff;
+    background: #e74c3c;
+    border: none;
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.logout-button:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+}
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Manager Dashboard</h2>
+        <a href="#" id="show-user-list">show Team</a>
+        <a href="geteam.html">Get Team</a>
+        <a href="#" id="show-check-resource">Request For Admin</a>
+        <a href="#" id="show-add-resource">Check Resources</a>
+        <a href="#" id="show-remove-resource">Request For New Resource</a>
+        <a href="#" id="show-remove-resource">Check Approvals</a>
+        <a href="#" id="show-check-resources-of-users">Remove Own Resource</a>
+        <br>
+        <a href="index.jsp" class="logout-button">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="welcome-message active" id="welcome-message">
+            Welcome To<br> Manager Dashboard
+        </div>
+        <div class="container">
+            <!-- List of Users Section -->
+            <div id="user-list" class="section">
+                <h2>List of Users</h2>
+                <ul id="userList">
+                    <!-- User list will be populated here -->
+                </ul>
+            </div>
+
+            <!-- List of Resources Section -->
+            <div id="resource-list" class="section">
+                <h2>List of Resources</h2>
+                <ul id="resourceList">
+                    <!-- Resource list will be populated here -->
+                </ul>
+            </div>
+
+            <!-- Check Resource Section -->
+            <div id="check-resource" class="section">
+                <h2>Check Resource</h2>
+                <!-- Content for checking resources will go here -->
+            </div>
+
+            <!-- Add Resource Section -->
+            <div id="add-resource" class="section">
+                <h2>Add Resource</h2>
+                <form id="add-resource-form" action="webapi/myresource/addResource" method="post">
+                    <div class="form-group">
+                        <label for="resource-name">Resource Name</label>
+                        <input type="text" id="resource-name" name="resourceName" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Add Resource">
+                    </div>
+                    <div id="add-message" class="message"></div>
+                </form>
+            </div>
+
+            <!-- Remove Resource Section -->
+            <div id="remove-resource" class="section">
+                <h2>Remove Resource</h2>
+                <form id="remove-resource-form" action="webapi/myresource/removeResource" method="post">
+                    <div class="form-group">
+                        <label for="remove-resource-dropdown">Resource to Remove</label>
+                        <select id="remove-resource-dropdown" name="resourceName" required>
+                            <!-- Options will be populated dynamically -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" value="Remove Resource">
+                    </div>
+                    <div id="remove-message" class="message"></div>
+                </form>
+            </div>
+
+            <!-- Check Resources of Users Section -->
+            <div id="check-resources-of-users" class="section">
+                <h2>Check Resources of Users</h2>
+                <!-- Content for checking resources of users will go here -->
+            </div>
+
+            <!-- Check Users of Resources Section -->
+            <div id="check-users-of-resources" class="section">
+                <h2>Check Users of Resources</h2>
+                <!-- Content for checking users of resources will go here -->
+            </div>
+
+            <!-- Requests Section -->
+            <div id="requests" class="section">
+                <h2>Requests</h2>
+                <!-- Content for requests will go here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

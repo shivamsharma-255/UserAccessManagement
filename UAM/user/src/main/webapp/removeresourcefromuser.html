@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Resource from User</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .header-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #4a90e2;
+            margin: 0;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin: 0;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+            display: block;
+            text-align: left;
+            width: 100%;
+        }
+
+        select {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #4a90e2;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .alert {
+            margin-top: 20px;
+            font-size: 16px;
+            color: #d9534f;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsernames();
+        });
+
+        function fetchUsernames() {
+            fetch('webapi/myresource/usernames')
+                .then(response => response.json())
+                .then(usernames => {
+                    const userSelect = document.getElementById('username');
+                    usernames.forEach(username => {
+                        const option = document.createElement('option');
+                        option.value = username;
+                        option.text = username;
+                        userSelect.add(option);
+                    });
+                });
+        }
+
+        function fetchResourcesForUser(username) {
+            fetch(`webapi/myresource/resourcesForUser?username=${username}`)
+                .then(response => response.json())
+                .then(resources => {
+                    const resourceSelect = document.getElementById('resourceName');
+                    resourceSelect.innerHTML = ''; // Clear previous options
+                    resources.forEach(resource => {
+                        const option = document.createElement('option');
+                        option.value = resource;
+                        option.text = resource;
+                        resourceSelect.add(option);
+                    });
+                });
+        }
+
+        function onUserChange() {
+            const username = document.getElementById('username').value;
+            if (username) {
+                fetchResourcesForUser(username);
+            }
+        }
+
+        function removeResource() {
+            const username = document.getElementById('username').value;
+            const resourceName = document.getElementById('resourceName').value;
+
+            if (username && resourceName) {
+                fetch('webapi/myresource/removeResourceFromUser', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `username=${username}&resourceName=${resourceName}`
+                })
+                .then(response => response.text())
+                .then(result => {
+                    alert(result);
+                });
+            } else {
+                alert('Please select both username and resource.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-container">
+            <h1>Remove Resource from User</h1>
+        </div>
+        <div class="form-container">
+            <form id="removeResourceForm">
+                <label for="username">Username:</label>
+                <select id="username" name="username" onchange="onUserChange()">
+                    <option value="">Select a user</option>
+                </select>
+                <br><br>
+                <label for="resourceName">Resource:</label>
+                <select id="resourceName" name="resourceName">
+                    <option value="">Select a resource</option>
+                </select>
+                <br><br>
+                <button type="button" onclick="removeResource()">Remove Resource</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

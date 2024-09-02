@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Role Change Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .status-approved {
+            color: green;
+        }
+        .status-rejected {
+            color: red;
+        }
+        .status-pending {
+            color: orange;
+        }
+        .button {
+            padding: 5px 10px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .approve-button {
+            background-color: green;
+        }
+        .reject-button {
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Role Change Requests</h1>
+    <table id="requestsTable">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Requested Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Requests will be dynamically inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Fetch and display role change requests
+        async function fetchRequests() {
+            try {
+                const response = await fetch('webapi/myresource/requests', { cache: "no-cache" });
+                if (response.ok) {
+                    const requests = await response.json();
+                    console.log('Fetched requests:', requests);
+                    const tableBody = document.querySelector('#requestsTable tbody');
+                    tableBody.innerHTML = '';
+
+                    requests.forEach(request => {
+                        const row = document.createElement('tr');
+                        const statusClass = `status-${request.status.toLowerCase()}`;
+
+                        row.innerHTML = `
+                            <td>${request.username}</td>
+                            <td>${request.resourceName}</td>
+                            <td class="${statusClass}">${request.status}</td>
+                            <td>
+                                ${request.status === 'Pending' ? `
+                                    <button class="button approve-button" onclick="handleApprove('${request.username}', '${request.resourceName}')">Approve</button>
+                                    <button class="button reject-button" onclick="handleReject('${request.username}', '${request.resourceName}')">Reject</button>
+                                ` : ''}
+                            </td>
+                        `;
+
+                        tableBody.appendChild(row);
+                    });
+                } else {
+                    console.error('Failed to fetch requests: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Error fetching requests:', error);
+            }
+        }
+
+        // Handle approve action
+        async function handleApprove(username, resourceName) {
+            try {
+                const response = await fetch('webapi/myresource/approve', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, newRole: resourceName }),
+                });
+                if (response.ok) {
+                    const result = await response.text();
+                    alert(result);
+                    fetchRequests(); // Refresh requests after approving
+                } else {
+                    console.error('Failed to approve request: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Error approving request:', error);
+            }
+        }
+
+        // Handle reject action
+        async function handleReject(username, newRole) {
+            try {
+                const response = await fetch('webapi/myresource/reject', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, newRole }),
+                });
+                if (response.ok) {
+                    const result = await response.text();
+                    alert(result);
+                    fetchRequests(); // Refresh requests after rejecting
+                } else {
+                    console.error('Failed to reject request: ' + response.statusText);
+                }
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+            }
+        }
+
+        // Initial fetch of requests
+        fetchRequests();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <link href="styled.css" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+            margin-top: 0.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="signup-form">
+            <h2>Add New User</h2>
+            <form id="signup-form" action="webapi/myresource/adduser" method="post">
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" name="firstname" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" name="lastname" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phno">Phone Number</label>
+                    <input type="text" id="phno" name="phno" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="pwd" required>
+                    <div class="error-message" id="password-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirm Password</label>
+                    <input type="password" id="confirm-password" name="cpwd" required>
+                    <div class="error-message" id="confirm-password-error"></div>
+                </div>
+                <br>
+                <div class="butn">
+                    <button style="padding-left:165px;padding-right:165px" type="submit" class="submit-btn">Add User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            // Clear previous error messages
+            document.getElementById('password-error').textContent = '';
+            document.getElementById('confirm-password-error').textContent = '';
+
+            var password = document.getElementById('password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            var passwordValid = true;
+            var confirmPasswordValid = true;
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                document.getElementById('confirm-password-error').textContent = 
+                    'Passwords do not match.';
+                confirmPasswordValid = false;
+            }
+
+            // Prevent form submission if there are validation errors
+            if (!passwordValid || !confirmPasswordValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
